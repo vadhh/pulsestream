@@ -8,13 +8,13 @@ The system follows a strict decoupling between Ingestion, Processing, and Presen
 
 ```mermaid
 graph TD
-    A[Producer (Python)] -->|JSON Stream| B(Redpanda / Kafka)
-    B -->|Subscribe| C[AI Worker (Consumer)]
-    C -->|Inference| D[Ollama (Llama 3)]
-    C -->|Hot Data| E[Redis Cache]
-    C -->|Vector Embeddings| F[Qdrant DB]
-    E -->|Pub/Sub| G[Node.js WebSocket Bridge]
-    G -->|Socket.io| H[Next.js Dashboard]
+    A["Producer (Python)"] -->|JSON Stream| B["Redpanda / Kafka"]
+    B -->|Subscribe| C["AI Worker (Consumer)"]
+    C -->|Inference| D["Ollama (Llama 3)"]
+    C -->|Hot Data| E["Redis Cache"]
+    C -->|Vector Embeddings| F["Qdrant DB"]
+    E -->|Pub/Sub| G["Node.js WebSocket Bridge"]
+    G -->|Socket.io| H["Next.js Dashboard"]
 ```
 ## 🛠 Tech Stack (The "Why")
 - Redpanda (Kafka): Chosen for high-throughput event streaming without the JVM heaviness of Apache Kafka. Handles the data "nervous system."
