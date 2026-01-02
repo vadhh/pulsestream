@@ -1,16 +1,18 @@
 import json
 import time
 import random
+import os
 from datetime import datetime, timezone
 from confluent_kafka import Producer
 from faker import Faker
 
-# Initialize Faker for realistic-looking headlines
 fake = Faker()
 
-# Configuration
+# Configuration: Read from Env or default to Localhost
+KAFKA_BROKER = os.getenv('KAFKA_BROKER', 'localhost:19092')
+
 conf = {
-    'bootstrap.servers': 'localhost:19092', # Connects to Redpanda external port
+    'bootstrap.servers': KAFKA_BROKER,
     'client.id': 'python-producer'
 }
 
@@ -18,7 +20,6 @@ producer = Producer(conf)
 topic = 'market-news'
 
 def delivery_report(err, msg):
-    """ Called once for each message produced to indicate delivery result. """
     if err is not None:
         print(f'Message delivery failed: {err}')
     else:
@@ -26,8 +27,6 @@ def delivery_report(err, msg):
 
 def generate_news():
     sources = ['Bloomberg', 'Reuters', 'CoinDesk', 'CNBC', 'Financial Times']
-    
-    # Simulate some chaos
     headline_structure = [
         f"{fake.company()} stock {random.choice(['soars', 'plummets', 'stabilizes'])} after earnings report.",
         f"CEO of {fake.company()} announces surprise resignation.",
@@ -43,27 +42,16 @@ def generate_news():
         'source': random.choice(sources)
     }
 
-print("🚀 Starting Producer... Press Ctrl+C to stop.")
+print(f"🚀 Starting Producer connected to: {KAFKA_BROKER}")
 
 try:
     while True:
         data = generate_news()
-        
-        # Asynchronous produce
-        producer.produce(
-            topic, 
-            key=data['id'], 
-            value=json.dumps(data), 
-            on_delivery=delivery_report
-        )
-        
-        # Wait up to 1 second for events. Callbacks will be invoked during this call
+        producer.produce(topic, key=data['id'], value=json.dumps(data), on_delivery=delivery_report)
         producer.poll(0)
-        
-        print(f"Sent: {data['headline'][:50]}...")
-        time.sleep(5) # 5 second delay as requested
+        time.sleep(5) 
 
 except KeyboardInterrupt:
     print("Aborted by user")
 finally:
-    producer.flush() # Ensure all messages are sent before exiting
+    producer.flush()

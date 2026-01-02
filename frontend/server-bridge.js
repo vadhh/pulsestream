@@ -12,9 +12,14 @@ const io = new Server(httpServer, {
 });
 
 // 2. Connect to Redis Pub/Sub
+const redisHost = process.env.REDIS_HOST || "localhost";
+const redisPort = process.env.REDIS_PORT || 6379;
+
+console.log(`🔌 Bridge connecting to Redis at ${redisHost}:${redisPort}`);
+
 const redis = new Redis({
-  host: "localhost", // Or '127.0.0.1' if localhost fails
-  port: 6379,
+  host: redisHost,
+  port: redisPort,
 });
 
 redis.subscribe("news_updates", (err, count) => {

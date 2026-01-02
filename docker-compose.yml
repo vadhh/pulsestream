@@ -83,7 +83,19 @@ services:
         condition: service_started
       ollama:
         condition: service_started
-
+  bridge:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.bridge
+    container_name: pulsestream-bridge
+    ports:
+      - "3001:3001"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_started
 volumes:
   redpanda-data:
   redis-data:

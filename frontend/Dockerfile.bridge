@@ -1,0 +1,17 @@
+# frontend/Dockerfile.bridge
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies (we only need the server deps)
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copy the bridge script
+COPY server-bridge.js .
+
+# Expose the socket port
+EXPOSE 3001
+
+# Run the bridge
+CMD ["node", "server-bridge.js"]

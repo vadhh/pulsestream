@@ -50,12 +50,6 @@ docker exec -it pulsestream-ollama ollama pull llama3
 The frontend consists of a WebSocket bridge (to talk to Redis) and the Next.js UI.
 ```Bash
 cd frontend
-npm install
-
-# Terminal A: Start the WebSocket Bridge
-node server-bridge.js
-
-# Terminal B: Start the UI
 npm run dev
 ```
 3. Verification
