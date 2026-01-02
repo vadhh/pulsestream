@@ -27,52 +27,45 @@ graph TD
 
 - Next.js 14 + Shadcn UI: Modern React framework for a high-performance, server-rendered dashboard.
 
-- Docker Compose: Orchestrates the multi-container environment (5 services).
+- Docker Compose: Orchestrates the multi-container environment (7 services).
 
 ## 🚀 Quick Start
 ### Prerequisites
- Docker & Docker Compose
+ - Docker & Docker Compose
 
- Python 3.10+
+ - Node.js 18+
 
- Node.js 18+
-
-1. Infrastructure (The Plumbing)
-Spin up the containerized services (Redpanda, Redis, Qdrant, Ollama):
+1. The Backend (Fully Containerized)
+We use Docker to spin up the entire data pipeline, including the AI model, database, and Python workers.
 
 ```Bash
-
+# Start all 7 services (Redpanda, Redis, Qdrant, Ollama, Producer, Consumer)
 docker-compose up -d
-Note: The first run requires pulling the Llama 3 model (~4GB). Run docker exec -it pulsestream-ollama ollama pull llama3.
 ```
-2. The Backend (The Brain)
+Note: The first run requires pulling the Llama 3 model. You may need to run this command once the Ollama container is active:
 ```Bash
-
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-# Terminal A: Start generating market data
-python producer.py
-
-# Terminal B: Start the AI Analyst
-python consumer.py
+docker exec -it pulsestream-ollama ollama pull llama3
 ```
-3. The Frontend (The Face)
+2. The Frontend (The Face)
+The frontend consists of a WebSocket bridge (to talk to Redis) and the Next.js UI.
 ```Bash
-
 cd frontend
 npm install
 
-# Terminal C: Start the WebSocket Bridge
+# Terminal A: Start the WebSocket Bridge
 node server-bridge.js
 
-# Terminal D: Start the UI
+# Terminal B: Start the UI
 npm run dev
 ```
+3. Verification
+- Open http://localhost:3000 to see the live market feed.
+- View logs for the AI analyst:
+```Bash
+docker logs -f pulsestream-consumer
+```
 ## 🔮 Roadmap
-- Scaling: Implement a consumer group of 5 workers to parallelize inference.
+- Visualizing Vectors: Integrate Qdrant dashboard for embedding visualization.
 
 - RAG (Retrieval-Augmented Generation): Use Qdrant to fetch historical context before analyzing new headlines.
 
